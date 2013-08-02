@@ -75,7 +75,7 @@ def getProjDetails(feature):
 		auth='ESRI'
 	elif code>199999 and code< 209200:
 		auth='CUSTOM'
-	return [auth,wkt[:wkt.rfind(']')]]
+	return [auth,wkt[:wkt.rfind(']')+1]]
 	
 def parseFieldType(name, esriType):
 	if esriType.lower() in ("text","string","date"):
