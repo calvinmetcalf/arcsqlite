@@ -1,5 +1,6 @@
 from arcpy import ListFields,Describe,SetProgressorLabel,SetProgressorPosition,GetCount_management, SetProgressor, AddMessage
 from os.path import splitext
+from sqlite3 import Connection
 
 #utility functions we will call more then once
 
@@ -65,10 +66,19 @@ def getExt(fileName):
 
 getProjCode = lambda feature: Describe(feature).spatialReference.factoryCode
 
+def fromCode(code):
+	conn = Connection('srs.db')
+	c = conn.cursor()
+	c.execute('select wkt from wkt where srid=:code',{'code':code})
+	out = c.fetchone()
+	c.close()
+	conn.close()
+	return out[0]
+
 def getProjDetails(feature):
 	proj = Describe(feature).spatialReference
 	code = getProjCode(feature)
-	wkt = proj.exporttostring()
+	wkt = fromCode(code)
 	if code >999 and code<32769:
 		auth = 'EPSG'
 	elif code>32999 and code< 200000:
