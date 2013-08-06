@@ -66,19 +66,10 @@ def getExt(fileName):
 
 getProjCode = lambda feature: Describe(feature).spatialReference.factoryCode
 
-def fromCode(code):
-	conn = Connection('srs.db')
-	c = conn.cursor()
-	c.execute('select wkt from wkt where srid=:code',{'code':code})
-	out = c.fetchone()
-	c.close()
-	conn.close()
-	return out[0]
-
 def getProjDetails(feature):
 	proj = Describe(feature).spatialReference
 	code = getProjCode(feature)
-	wkt = fromCode(code)
+	wkt =  proj.exporttostring()
 	if code >999 and code<32769:
 		auth = 'EPSG'
 	elif code>32999 and code< 200000:
