@@ -1,6 +1,7 @@
 from arcpy import ListFields,Describe,SetProgressorLabel,SetProgressorPosition,GetCount_management, SetProgressor, AddMessage
 from os.path import splitext
 from sqlite3 import Connection
+import codes
 
 #utility functions we will call more then once
 
@@ -69,14 +70,17 @@ getProjCode = lambda feature: Describe(feature).spatialReference.factoryCode
 def getProjDetails(feature):
 	proj = Describe(feature).spatialReference
 	code = getProjCode(feature)
-	wkt =  proj.exporttostring()
 	if code >999 and code<32769:
 		auth = 'EPSG'
 	elif code>32999 and code< 200000:
 		auth='ESRI'
 	elif code>199999 and code< 209200:
 		auth='CUSTOM'
-	return [auth,wkt[:wkt.rfind(']')+1]]
+	if auth == 'EPSG':
+                wkt = codes.epsg[code]
+        elif auth == 'ESRI':
+                wkt = codes.esri[code]
+	return [auth,wkt]
 	
 def parseFieldType(name, esriType):
 	if esriType.lower() in ("text","string","date"):
